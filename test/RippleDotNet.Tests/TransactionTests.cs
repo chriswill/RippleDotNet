@@ -31,9 +31,7 @@ namespace RippleDotNet.Tests
         
         //private static string serverUrl = "wss://s1.ripple.com:443";
         //private static string serverUrl = "wss://s2.ripple.com:443";
-
-        public TestContext TestContext { get; set; }
-
+        
         
         [ClassInitialize]
         public static void MyClassInitialize(TestContext testContext)
@@ -52,7 +50,9 @@ namespace RippleDotNet.Tests
         public async Task CanGetTransaction()
         {
             //transaction on mainnet
-            ITransactionResponseCommon transaction = await client.Transaction("F1CFA020DB5DF2AF3E06D9E84B50EFAA2854D7269238C1F188BE007C9D2B5FB8");
+            RippleClient rippleClient = new RippleClient("wss://s1.ripple.com:443");
+            rippleClient.Connect();
+            ITransactionResponseCommon transaction = await rippleClient.Transaction("F1CFA020DB5DF2AF3E06D9E84B50EFAA2854D7269238C1F188BE007C9D2B5FB8");
             Assert.IsNotNull(transaction);           
         }
 
@@ -60,7 +60,9 @@ namespace RippleDotNet.Tests
         public async Task CanGetTransactionAsBinary()
         {
             //transaction on mainnet
-            IBaseTransactionResponse transaction = await client.TransactionAsBinary("5FF261E0E463EF3CA9E2BD4F0754E398A3DBAADF71A3911190C5F9A1241ED403");            
+            RippleClient rippleClient = new RippleClient("wss://s1.ripple.com:443");
+            rippleClient.Connect();
+            IBaseTransactionResponse transaction = await rippleClient.TransactionAsBinary("5FF261E0E463EF3CA9E2BD4F0754E398A3DBAADF71A3911190C5F9A1241ED403");            
             Assert.IsNotNull(transaction);
         }
 
