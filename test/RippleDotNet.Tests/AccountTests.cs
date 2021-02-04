@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using Flurl.Http;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -15,24 +15,22 @@ namespace RippleDotNet.Tests
     public class AccountTests
     {
         private static IRippleClient client;
+        private static string account;
         
-        //this is an altnet account
-        private static string account = "rwEHFU98CjH59UX2VqAgeCzRFU9KVvV71V";
-        
-        //these are mainnet accounts
-        //private static string account = "rPGKpTsgSaQiwLpEekVj1t5sgYJiqf2HDC";
-        //private static string account = "rho3u4kXc5q3chQFKfn9S1ZqUCya1xT3t4";
-
         private static string serverUrl = "wss://s.altnet.rippletest.net:51233";
         //private static string serverUrl = "wss://s1.ripple.com:443";
         //private static string serverUrl = "wss://s2.ripple.com:443";
 
 
         [ClassInitialize]
-        public static void MyClassInitialize(TestContext testContext)
+        public static async Task MyClassInitialize(TestContext testContext)
         {
             client = new RippleClient(serverUrl);
-            client.Connect();            
+            client.Connect();
+
+            string faucetUrl = "https://faucet.altnet.rippletest.net/accounts";
+            AccountResponse result = await faucetUrl.PostAsync().ReceiveJson<AccountResponse>();
+            account = result.Account.Address;
         }
 
         [TestMethod]
@@ -141,5 +139,24 @@ namespace RippleDotNet.Tests
             StObject obj = StObject.FromHex(meta);
             Assert.IsNotNull(obj);
         }
+    }
+
+    public class AccountResponse
+    {
+        public Account Account { get; set; }
+
+        public int Amount { get; set; }
+
+        public int Balance { get; set; }
+    }
+
+    public class Account
+    {
+        public string XAddress { get; set; }
+        public string Secret { get; set; }
+
+        public string ClassicAddress { get; set; }
+
+        public string Address { get; set; }
     }
 }
